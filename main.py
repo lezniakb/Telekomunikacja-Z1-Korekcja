@@ -44,3 +44,37 @@ def zakodujWiadomosc(wiadomosc):
         zakodowana += blok + dodajParzystosc
 
     return zakodowana
+
+
+# main
+print("Zadanie 1 - Kody wykrywające i korygujące błędy transmisji")
+while True:
+    print("--------------\nMenu Główne:\n"
+          # 1. nadpisuje plik nowa wiadomoscia lub calkowicie tworzy nowy plik
+          "1. Utwórz wiadomość do zakodowania\n"
+          # 2. umozliwia uzytkownikowi sprawdzenie stanu zapisanej wiadomosci
+          "2. Przygotowana wiadomość do zakodowania\n"
+          # 3. koduje wiadomosc i zapisuje ja w osobnym pliku
+          "3. Zakoduj wiadomość, zresetuj występujące błędy\n"
+          # 4. odbiera wiadomosc, nastepnie sprawdza poprawnosc i jesli wystapil blad transmisji to poprawia
+          "4. Odbierz zakodowaną wiadomość, zweryfikuj i popraw, jeśli wystąpiły błędy\n"
+          # 5. powoduje opuszczenie programu
+          "5. Zakończ program")
+    wybor = input("Wybór: ")
+    if wybor == "1":
+        nazwaPliku = "niezakodowanaWiadomosc.txt"
+        wiadomosc = input("Wprowadź komunikat: ")
+        napiszWiadomosc(nazwaPliku, wiadomosc)
+        input(f"Pomyślnie zapisano wiadomość do pliku \"{nazwaPliku}\".\n"
+              f"Wybierz enter aby kontynuować.")
+    elif wybor == "2":
+        print("todo")
+    elif wybor == "3":
+        print("todo")
+    elif wybor == "4":
+        print("todo")
+    elif wybor == "5":
+        print("todo")
+        # exit(0) ? moze jeszcze upewnic sie czy zasoby sa zamkniete
+    else:
+        input("Wybrano niepoprawną opcję! Wybierz enter aby kontynuować.")
