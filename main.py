@@ -79,6 +79,17 @@ def odkodujWiadomosc(wiadomosc):
         komunikat += blokZnakow
     return komunikat
 
+def sprawdzCzyIstnieje(nazwaPliku):
+    if system.path.exists(nazwaPliku):
+        zawartosc = wczytajWiadomosc(nazwaPliku)
+        if len(zawartosc) != 0:
+            return True
+        else:
+            print("Wiadomość jest pusta! Wybierz opcję 1 w menu głównym aby ją napisać.")
+    else:
+        print("Plik nie istnieje! Wybierz opcję 1 w menu głównym aby go utworzyć.")
+    return False
+
 # main
 print("Zadanie 1 - Kody wykrywające i korygujące błędy transmisji")
 while True:
@@ -95,25 +106,32 @@ while True:
           "5. Zakończ program")
     wybor = input("Wybór: ")
 
+    niezakodowanaWiadomosc = "niezakodowanaWiadomosc.txt"
+    zakodowanaWiadomosc = "zakodowanaWiadomosc.txt"
+
     if wybor == "1":
-        nazwaPliku = "niezakodowanaWiadomosc.txt"
         wiadomosc = input("Wprowadź komunikat: ")
-        napiszWiadomosc(nazwaPliku, wiadomosc)
-        input(f"Pomyślnie zapisano wiadomość do pliku \"{nazwaPliku}\".\n"
+        napiszWiadomosc(niezakodowanaWiadomosc, wiadomosc)
+        input(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaWiadomosc}\".\n"
               f"Wybierz enter aby kontynuować.")
 
     elif wybor == "2":
-        print("todo")
+        if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
+            print(wczytajWiadomosc(niezakodowanaWiadomosc))
+        input("Wybierz enter aby kontynuować.")
 
     elif wybor == "3":
-        print("todo")
+        if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
+            zakodowana = zakodujWiadomosc(niezakodowanaWiadomosc)
+            napiszWiadomosc(zakodowanaWiadomosc, zakodowana)
+        input("Wybierz enter aby kontynuować.")
 
     elif wybor == "4":
         print("todo")
 
     elif wybor == "5":
-        print("todo")
-        # exit(0) ? moze jeszcze upewnic sie czy zasoby sa zamkniete
+        print("Następuje opuszczenie programu.")
+        break
 
     else:
         input("Wybrano niepoprawną opcję! Wybierz enter aby kontynuować.")
