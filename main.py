@@ -45,6 +45,39 @@ def zakodujWiadomosc(wiadomosc):
 
     return zakodowana
 
+def odkodujWiadomosc(wiadomosc):
+    """Odkodowuje zakodowaną wiadomość. Usuwa bit parzystości z każdego bloku.
+    Póki co (do zmiany) jeśli wykryta zostanie niezgodność parzystości to wyświetla info"""
+    komunikat = ""
+    for i in range(0, len(wiadomosc), 9):
+        # dla kolejnych 9 znakow, zapisz konkretny blok
+        blok = wiadomosc[i:i+9]
+        if len(blok) < 9:
+            # jesli blok nie jest pelny to zakoncz petle
+            break
+        # wez pierwsze 8 znakow (to sa dane)
+        dane = blok[0:8]
+        # zapisz ostatni znak jako znak parzystosci (1 dopelnia do parzystosci, 0 mowi ze dane sa parzyste)
+        parzystosc = blok[8]
+        # sprawdzamy czy sie parzystosc zgadza
+        licznikJedynek = dane.count("1")
+        if licznikJedynek % 2 == 0:
+            realnaParzystosc = "0"
+        else:
+            realnaParzystosc = "1"
+
+        # jesli parzystosc sie nie zgadza to wysweitl blad
+        if parzystosc != realnaParzystosc:
+            print(f"Wykryto błąd w bloku '{i}': niezgodność parzystości")
+
+        # Przekonwertuj dane binarne na znak ASCII
+        # zamien bin na dec
+        wartoscDziesietna = int(dane, 2)
+        # zamien dec na ascii
+        blokZnakow = chr(wartoscDziesietna)
+        # dodaj blok odkodowanych znakow do komunikatu
+        komunikat += blokZnakow
+    return komunikat
 
 # main
 print("Zadanie 1 - Kody wykrywające i korygujące błędy transmisji")
@@ -61,20 +94,26 @@ while True:
           # 5. powoduje opuszczenie programu
           "5. Zakończ program")
     wybor = input("Wybór: ")
+
     if wybor == "1":
         nazwaPliku = "niezakodowanaWiadomosc.txt"
         wiadomosc = input("Wprowadź komunikat: ")
         napiszWiadomosc(nazwaPliku, wiadomosc)
         input(f"Pomyślnie zapisano wiadomość do pliku \"{nazwaPliku}\".\n"
               f"Wybierz enter aby kontynuować.")
+
     elif wybor == "2":
         print("todo")
+
     elif wybor == "3":
         print("todo")
+
     elif wybor == "4":
         print("todo")
+
     elif wybor == "5":
         print("todo")
         # exit(0) ? moze jeszcze upewnic sie czy zasoby sa zamkniete
+
     else:
         input("Wybrano niepoprawną opcję! Wybierz enter aby kontynuować.")
