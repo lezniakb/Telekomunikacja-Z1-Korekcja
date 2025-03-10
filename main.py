@@ -67,26 +67,22 @@ def odkodujWiadomosc(ciag):
         # jesli jest mniej niz 16 bitow to zakoncz
         if len(blok) < 16:
             break
-
-        # dekoduje znak do ASCII i dodaje do stringu tekst
-        tekst += chr(int(blok, 2))
-        # bierze kolejne znaki, a jesli nie istnieja, to konczy petle
+        dane = blok[:8]
+        tekst += chr(int(dane, 2))
         ciag = ciag[16:]
     return tekst
 
 
 # w macierzy H: brak zerowych kolumn, brak kolumn identycznych
 # zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
-H = np.array([
-    [1,0,0,0, 1,1,0,1, 1,0,1,0, 1,0,0,0],
-    [0,1,0,0, 1,0,1,1, 0,1,0,0, 0,1,0,1],
-    [0,0,1,0, 0,1,1,1, 0,0,1,0, 1,0,1,1],
-    [0,0,0,1, 1,1,1,0, 0,1,0,1, 0,1,1,0],
-    [1,1,0,1, 0,0,1,0, 1,0,0,1, 1,0,1,0],
-    [1,0,1,1, 0,1,0,0, 1,1,0,0, 0,1,0,1],
-    [0,1,1,0, 1,0,0,1, 0,0,1,1, 0,0,1,1],
-    [1,1,1,0, 0,0,1,1, 0,1,1,0, 1,1,0,0]
-])
+H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+              [0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+              [0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0],
+              [1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+              [0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+              [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+              [1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+              [0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
 
 niezakodowanaWiadomosc = "niezakodowanaWiadomosc.txt"
 zakodowanaWiadomosc = "zakodowanaWiadomosc.txt"
