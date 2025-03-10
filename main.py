@@ -1,96 +1,96 @@
 import os as system
+import numpy as np
+
 
 def wczytajWiadomosc(nazwaPliku):
     with open(nazwaPliku, "r", encoding="utf-8") as plik:
-        plik = plik.read().strip()
+        plik = plik.read()
+        plik = plik.strip()
         return plik
+
 
 def napiszWiadomosc(nazwaPliku, wiadomosc):
     with open(nazwaPliku, "w", encoding="utf-8") as plik:
         plik.write(wiadomosc)
 
-def zakodujWiadomosc(wiadomosc):
-    binarnaWiadomosc = ""
-    for znak in wiadomosc:
-        # ord(znak) - wez wartosc ASCII podanego znaku;
-        # '08b' - oraz dolacz zera po prawej stronie tak, aby ciag mial 8 bitow
-        binarnaWiadomosc += format(ord(znak), "08b")
-
-    # na tym etapie wiadomosc to ciag 8-bitowych lancuchow: 8bit (spacja) 8bit (spacja) 8bit itd.
-    zakodowana = ""
-    for i in range(0, len(binarnaWiadomosc), 8):
-        # dla kazdego 'bloku' majacego 8 bitow wykonuj
-        # wez kolejny blok z ciagu (kolejne 8 bitow)
-        blok = binarnaWiadomosc[i:i+8]
-        # jesli jest mniej niz 8 bitow (nie powinno sie zdazyc ale moze)
-        if len(blok) < 8:
-            # to do bloku (np. 6) dodaj brakujace zera
-            blok = blok + (8 - len(blok)) * "0"
-
-        licznik = 0
-        # sprawdz ile jest jedynek w bloku
-        for bit in blok:
-            if bit == "1":
-                licznik += 1
-
-        # jesli licznik jest parzysty (mod 2 daje 0) to nie dodawaj jedynki do bloku, bo juz jest parzysty
-        if licznik % 2 == 0:
-            dodajParzystosc = "0"
-        else:
-            # nieparzysta ilosc "1" w bloku: dodaj "1" aby bylo parzyscie
-            dodajParzystosc = "1"
-
-        # dodaj kolejny blok z bitem parzystosci do zakodowanego stringa
-        zakodowana += blok + dodajParzystosc
-
-    return zakodowana
-
-def odkodujWiadomosc(wiadomosc):
-    """Odkodowuje zakodowaną wiadomość. Usuwa bit parzystości z każdego bloku.
-    Póki co (do zmiany) jeśli wykryta zostanie niezgodność parzystości to wyświetla info"""
-    komunikat = ""
-    for i in range(0, len(wiadomosc), 9):
-        # dla kolejnych 9 znakow, zapisz konkretny blok
-        blok = wiadomosc[i:i+9]
-        if len(blok) < 9:
-            # jesli blok nie jest pelny to zakoncz petle
-            break
-        # wez pierwsze 8 znakow (to sa dane)
-        dane = blok[0:8]
-        # zapisz ostatni znak jako znak parzystosci (1 dopelnia do parzystosci, 0 mowi ze dane sa parzyste)
-        parzystosc = blok[8]
-        # sprawdzamy czy sie parzystosc zgadza
-        licznikJedynek = dane.count("1")
-        if licznikJedynek % 2 == 0:
-            realnaParzystosc = "0"
-        else:
-            realnaParzystosc = "1"
-
-        # jesli parzystosc sie nie zgadza to wysweitl blad
-        if parzystosc != realnaParzystosc:
-            print(f"Wykryto błąd w bloku '{i}': niezgodność parzystości")
-
-        # Przekonwertuj dane binarne na znak ASCII
-        # zamien bin na dec
-        wartoscDziesietna = int(dane, 2)
-        # zamien dec na ascii
-        blokZnakow = chr(wartoscDziesietna)
-        # dodaj blok odkodowanych znakow do komunikatu
-        komunikat += blokZnakow
-    return komunikat
 
 def sprawdzCzyIstnieje(nazwaPliku):
+    # jesli istnieje
     if system.path.exists(nazwaPliku):
         zawartosc = wczytajWiadomosc(nazwaPliku)
+        # i zawartosc nie jest pusta
         if len(zawartosc) != 0:
+            # zwroc true
             return True
         else:
             print("Wiadomość jest pusta! Wybierz opcję 1 w menu głównym aby ją napisać.")
     else:
         print("Plik nie istnieje! Wybierz opcję 1 w menu głównym aby go utworzyć.")
+    # plik nie istnieje lub jest pusty
     return False
 
-# main
+
+def pobierzBityParzystosci(blok):
+    # pomnoz kazdy blok (8 bitow) przez kazdy wiersz macierzy H i na koncu sumuj modulo 2
+
+    # sformatuj blok tak, aby zawsze mial 8 bitow i byl binarny
+    bityBloku = format(ord(blok), "08b")
+    bityParzystosci = ""
+    # dla wszystkich bitow w bloku (jest ich 8)
+    for i in range(8):
+        suma = 0
+        # dla kazdej kolumny w macierzy H
+        for j in range(8):
+            # dodaj do sumy wartosc z macierzy pomnozonej razy wartosc calkowita z bitowBloku dla danej kolumny
+            suma += H[i][j] * int(bityBloku[j])
+        parzystosc = suma % 2
+        bityParzystosci += str(parzystosc)
+    return bityParzystosci
+
+
+def zakodujWiadomosc(wiadomosc):
+    # koduje wiadomosc, w petli dodaje bloki razem z bitami parzystosci obliczonymi na podstawie mac. H (8 + 8)
+    wynik = ""
+    for znak in wiadomosc:
+        # pierwszy skladnik to dane w postaci binarnej (08b: zawsze 8 bitow),
+        # drugi to bity parzystosci sprawdzajace poprawnosc
+        wynik += format(ord(znak), "08b") + pobierzBityParzystosci(znak)
+    return wynik
+
+
+def odkodujWiadomosc(ciag):
+    # odwraca proces jednoczesnie usuwajac bity parzystosci
+    tekst = ""
+    while ciag:
+        # wez 16 znakow z ciagu
+        blok = ciag[:16]
+        # jesli jest mniej niz 16 bitow to zakoncz
+        if len(blok) < 16:
+            break
+
+        # dekoduje znak do ASCII i dodaje do stringu tekst
+        tekst += chr(int(blok, 2))
+        # bierze kolejne znaki, a jesli nie istnieja, to konczy petle
+        ciag = ciag[16:]
+    return tekst
+
+
+# w macierzy H: brak zerowych kolumn, brak kolumn identycznych
+# zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
+H = np.array([
+    [1,0,0,0, 1,1,0,1, 1,0,1,0, 1,0,0,0],
+    [0,1,0,0, 1,0,1,1, 0,1,0,0, 0,1,0,1],
+    [0,0,1,0, 0,1,1,1, 0,0,1,0, 1,0,1,1],
+    [0,0,0,1, 1,1,1,0, 0,1,0,1, 0,1,1,0],
+    [1,1,0,1, 0,0,1,0, 1,0,0,1, 1,0,1,0],
+    [1,0,1,1, 0,1,0,0, 1,1,0,0, 0,1,0,1],
+    [0,1,1,0, 1,0,0,1, 0,0,1,1, 0,0,1,1],
+    [1,1,1,0, 0,0,1,1, 0,1,1,0, 1,1,0,0]
+])
+
+niezakodowanaWiadomosc = "niezakodowanaWiadomosc.txt"
+zakodowanaWiadomosc = "zakodowanaWiadomosc.txt"
+
 print("Zadanie 1 - Kody wykrywające i korygujące błędy transmisji")
 while True:
     print("--------------\nMenu Główne:\n"
@@ -106,14 +106,11 @@ while True:
           "5. Zakończ program")
     wybor = input("Wybór: ")
 
-    niezakodowanaWiadomosc = "niezakodowanaWiadomosc.txt"
-    zakodowanaWiadomosc = "zakodowanaWiadomosc.txt"
-
     if wybor == "1":
         wiadomosc = input("Wprowadź komunikat: ")
         napiszWiadomosc(niezakodowanaWiadomosc, wiadomosc)
-        input(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaWiadomosc}\".\n"
-              f"Wybierz enter aby kontynuować.")
+        input(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaWiadomosc}\".")
+        print("Wybierz enter aby kontynuować.")
 
     elif wybor == "2":
         if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
@@ -122,12 +119,14 @@ while True:
 
     elif wybor == "3":
         if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
-            zakodowana = zakodujWiadomosc(niezakodowanaWiadomosc)
+            wiadomosc = wczytajWiadomosc(niezakodowanaWiadomosc)
+            zakodowana = zakodujWiadomosc(wiadomosc)
             napiszWiadomosc(zakodowanaWiadomosc, zakodowana)
         input("Wybierz enter aby kontynuować.")
 
     elif wybor == "4":
-        print("todo")
+        odbierzIWeryfikujWiadomosc()
+        input("Wybierz enter aby kontynuować.")
 
     elif wybor == "5":
         print("Następuje opuszczenie programu.")
