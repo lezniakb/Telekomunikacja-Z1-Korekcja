@@ -73,6 +73,39 @@ def odkodujWiadomosc(ciag):
     return tekst
 
 
+def zweryfikujZnak(znakBin):
+    # funkcja sprawdza czy jeden znak (blok) jest poprawny
+    # R to zapisany ciag binarny znaku jako numpy array
+    R = np.array(list(znakBin)).astype(int)
+    # mnozymy R razy macierz H (funckja dot) i bierzemy mod 2
+    HR = np.dot(H, R) % 2
+    pozycje = []
+    # w zakresie jednego bloku (16 bitow)
+    for j in range(16):
+        # iteruj po wszystkich kolumnach macierzy H
+        # sprawdz dla kazdej kolumny, czy jest równa syndromowi błędu HR
+        # jesli tak, to znaczy ze blad jest na pozycji "j"
+        if np.array_equal(H[:, j], HR):
+            # blad dodawany jest do slownika pozycje i opuszcza petle
+            pozycje.append(j)
+            break
+    # wykrywanie podwojnych bledow
+    # jesli nie znaleziono pojedynczego bledu (pusta lista pozycje)
+    # sprawdzamy czy moga wystapic dwa bledy
+    if not pozycje:
+        # znowu iterujemy przez wszystkie kolumny macierzy H sumujemy ich modulow 2 i porownujemy
+        for i in range(16):
+            for j in range(i + 1, 16):
+                sumaKolumn = (H[:, i] + H[:, j]) % 2
+                # jesli suma dwoch kolumn jest rowna HR to znaczy za mamy podwojny blad
+                if np.array_equal(sumaKolumn, HR):
+                    pozycje.extend([i, j])
+                    break
+            if pozycje:
+                break
+    return pozycje
+
+
 # w macierzy H: brak zerowych kolumn, brak kolumn identycznych
 # zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
 H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -121,7 +154,7 @@ while True:
         input("Wybierz enter aby kontynuować.")
 
     elif wybor == "4":
-        odbierzIWeryfikujWiadomosc()
+        # odbierzIWeryfikujWiadomosc() nie dziala
         input("Wybierz enter aby kontynuować.")
 
     elif wybor == "5":
