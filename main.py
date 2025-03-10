@@ -106,6 +106,28 @@ def zweryfikujZnak(znakBin):
     return pozycje
 
 
+def zweryfikujWiadomosc(binarnyCiag):
+    pozycjeBledow = []
+    iteracja = 0
+    while binarnyCiag:
+        # dopoki mamy dalsze czesci binarnego ciagu danych
+        blok = binarnyCiag[:16]
+        # jesli dlugosc kolejnego bloku jest mniejsza niz 16 to przerwij
+        if len(blok) < 16:
+            break
+        # uzyj funkcji i zapisz wyniki w liscie "bledy"
+        bledy = zweryfikujZnak(blok)
+        # zapisz wlasciwe pozycje bledow (wczesniej jest tylko dla jednego bloku dane 8bit i poprawnosc 8bit,
+        # teraz jest bezwzgledna pozycja bledu
+        for blad in bledy:
+            bezwzglednaPozycja = iteracja * 16 + blad
+            pozycjeBledow.append(bezwzglednaPozycja)
+        # kontynuuj prace na dalszych blokach o ile istnieja
+        binarnyCiag = binarnyCiag[16:]
+        iteracja += 1
+    return pozycjeBledow
+
+
 # w macierzy H: brak zerowych kolumn, brak kolumn identycznych
 # zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
 H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
