@@ -177,6 +177,24 @@ def odbierzIWeryfikujWiadomosc():
     print("Odebrana wiadomość:", wiadomoscOdebrana)
 
 
+def probujOdczytacZakodowana():
+    zakodowanaWiadomosc = wczytajWiadomosc(zakodowanaPlik)
+    odczytanyTekst = ""
+    # bierzemy bloki co 8 bitow, bez wzgledu na bity parzystosci
+    for i in range(0, len(zakodowanaWiadomosc), 8):
+        # bierzemy fragment wiadomosci
+        fragment = zakodowanaWiadomosc[i:(i + 8)]
+        # szybko sprawdzamy czy nie jest mniejszy niz 8 bitow (ktore jest wymagane)
+        if len(fragment) < 8:
+            break
+        # przekonwertuj 8bitow (bajt) na jedna liczbe, a te liczbe na ASCII
+        calkowita = int(fragment, 2)
+        znak = chr(calkowita)
+        odczytanyTekst += znak
+
+    return odczytanyTekst
+
+
 # w macierzy H: brak zerowych kolumn, brak kolumn identycznych
 # zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
 H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -201,22 +219,22 @@ while True:
           "2. Przygotowana wiadomość do zakodowania\n"
           # 3. koduje wiadomosc i zapisuje ja w osobnym pliku
           "3. Zakoduj wiadomość, zresetuj występujące błędy\n"
-          # 4. odbiera wiadomosc, nastepnie sprawdza poprawnosc i jesli wystapil blad transmisji to poprawia
-          "4. Odbierz zakodowaną wiadomość, zweryfikuj i popraw, jeśli wystąpiły błędy\n"
-          # 5. powoduje opuszczenie programu
-          "5. Zakończ program")
+          # 4. pokazuje probe odczytania wiadomosci
+          "4. Pokaż zakodowaną wiadomość\n"
+          # 5. odbiera wiadomosc, nastepnie sprawdza poprawnosc i jesli wystapil blad transmisji to poprawia
+          "5. Odbierz zakodowaną wiadomość, zweryfikuj i popraw, jeśli wystąpiły błędy\n"
+          # 6. powoduje opuszczenie programu
+          "6. Zakończ program")
     wybor = input("Wybór: ")
 
     if wybor == "1":
         wiadomosc = input("Wprowadź komunikat: ")
         napiszWiadomosc(niezakodowanaPlik, wiadomosc)
         print(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaPlik}\".")
-        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "2":
         if sprawdzCzyIstnieje(niezakodowanaPlik):
             print("Wiadomość: '" + wczytajWiadomosc(niezakodowanaPlik) + "'")
-        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "3":
         if sprawdzCzyIstnieje(niezakodowanaPlik):
@@ -224,16 +242,18 @@ while True:
             zakodowana = zakodujWiadomosc(wiadomosc)
             napiszWiadomosc(zakodowanaPlik, zakodowana)
             print("Poprawnie zakodowano wiadomość!")
-            print("Zakodowana wiadomość: ", zakodowana)
-        input("Wybierz enter aby kontynuować ")
+            print("Zakodowana wiadomość: ", probujOdczytacZakodowana())
 
     elif wybor == "4":
-        odbierzIWeryfikujWiadomosc()
-        input("Wybierz enter aby kontynuować ")
+        print("Zakodowana wiadomość: ", probujOdczytacZakodowana())
 
     elif wybor == "5":
-        print("Następuje opuszczenie programu ")
-        break
+        odbierzIWeryfikujWiadomosc()
+
+    elif wybor == "6":
+        exit(0)
 
     else:
-        input("Wybrano niepoprawną opcję! \nWybierz enter aby kontynuować ")
+        print("Wybrano niepoprawną opcję!")
+
+    input("Wybierz enter aby kontynuować ")
