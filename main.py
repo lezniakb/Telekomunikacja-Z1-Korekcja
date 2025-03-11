@@ -128,6 +128,55 @@ def zweryfikujWiadomosc(binarnyCiag):
     return pozycjeBledow
 
 
+def poprawWiadomosc(binarnyCiag, pozycjeBledowGlobal):
+    # przeksztalc ciag na liste
+    listaBitow = list(binarnyCiag)
+
+    # posortuj pozycje bledow malejaco (od najwyzszej pozycji bledu
+    pozycjeMalejaco = sorted(pozycjeBledowGlobal, reverse=True)
+
+    for pozycja in pozycjeMalejaco:
+        # dla kazdej pozycji bledu sprawdz czy miesci sie w zakresie
+        if pozycja < len(listaBitow):
+            # wez bit dla tej pozycji
+            bit = listaBitow[pozycja]
+            # "przelacz" bit ktory jest bledny (moze byc tylko 0 lub tylko 1)
+            # jesli 0 jest blednym bitem to poprawny music byc "1" i vice wersa
+            if bit == "0":
+                nowyBit = "1"
+            else:
+                nowyBit = "0"
+
+            # nadpisz bit nowym, poprawnym
+            listaBitow[pozycja] = nowyBit
+
+    # dolacz liste bitow do poprawnej wiadomosci
+    poprawionaWiadomosc = "".join(listaBitow)
+    return poprawionaWiadomosc
+
+
+def odbierzIWeryfikujWiadomosc():
+    if sprawdzCzyIstnieje(zakodowanaPlik) == False:
+        print("Plik z zakodowaną wiadomością nie istnieje!")
+        return
+
+    zakod = wczytajWiadomosc(zakodowanaPlik)
+    pozycjeBledow = zweryfikujWiadomosc(zakod)
+    # jezeli pozycje bledow zawieraja tylko domyslme "-1" to znaczy ze nie ma bledow
+    if pozycjeBledow == []:
+        print("Nie wykryto błędów w komunikacie.")
+    else:
+        print("Wykryto błędy w komunikacie na pozycjach:", pozycjeBledow)
+        zakod = poprawWiadomosc(zakod, pozycjeBledow)
+        print("Poprawiono błędy.")
+
+    # odkoduj wiadomosc
+    wiadomoscOdebrana = odkodujWiadomosc(zakod)
+    # zapisz w pliku
+    napiszWiadomosc(odebranaPlik, wiadomoscOdebrana)
+    print("Odebrana wiadomość:", wiadomoscOdebrana)
+
+
 # w macierzy H: brak zerowych kolumn, brak kolumn identycznych
 # zeby korektowac podwojne bledy to zadna kolumna nie moze byc suma dwoch innych
 H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -139,8 +188,9 @@ H = np.array([[1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
               [1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0],
               [0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
 
-niezakodowanaWiadomosc = "niezakodowanaWiadomosc.txt"
-zakodowanaWiadomosc = "zakodowanaWiadomosc.txt"
+niezakodowanaPlik = "niezakodowanaWiadomosc.txt"
+zakodowanaPlik = "zakodowanaWiadomosc.txt"
+odebranaPlik = "odebranaWiadomosc.txt"
 
 print("Zadanie 1 - Kody wykrywające i korygujące błędy transmisji")
 while True:
@@ -159,29 +209,31 @@ while True:
 
     if wybor == "1":
         wiadomosc = input("Wprowadź komunikat: ")
-        napiszWiadomosc(niezakodowanaWiadomosc, wiadomosc)
-        input(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaWiadomosc}\".")
-        print("Wybierz enter aby kontynuować.")
+        napiszWiadomosc(niezakodowanaPlik, wiadomosc)
+        print(f"Pomyślnie zapisano wiadomość do pliku \"{niezakodowanaPlik}\".")
+        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "2":
-        if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
-            print(wczytajWiadomosc(niezakodowanaWiadomosc))
-        input("Wybierz enter aby kontynuować.")
+        if sprawdzCzyIstnieje(niezakodowanaPlik):
+            print("Wiadomość: '" + wczytajWiadomosc(niezakodowanaPlik) + "'")
+        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "3":
-        if sprawdzCzyIstnieje(niezakodowanaWiadomosc):
-            wiadomosc = wczytajWiadomosc(niezakodowanaWiadomosc)
+        if sprawdzCzyIstnieje(niezakodowanaPlik):
+            wiadomosc = wczytajWiadomosc(niezakodowanaPlik)
             zakodowana = zakodujWiadomosc(wiadomosc)
-            napiszWiadomosc(zakodowanaWiadomosc, zakodowana)
-        input("Wybierz enter aby kontynuować.")
+            napiszWiadomosc(zakodowanaPlik, zakodowana)
+            print("Poprawnie zakodowano wiadomość!")
+            print("Zakodowana wiadomość: ", zakodowana)
+        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "4":
-        # odbierzIWeryfikujWiadomosc() nie dziala
-        input("Wybierz enter aby kontynuować.")
+        odbierzIWeryfikujWiadomosc()
+        input("Wybierz enter aby kontynuować ")
 
     elif wybor == "5":
-        print("Następuje opuszczenie programu.")
+        print("Następuje opuszczenie programu ")
         break
 
     else:
-        input("Wybrano niepoprawną opcję! Wybierz enter aby kontynuować.")
+        input("Wybrano niepoprawną opcję! \nWybierz enter aby kontynuować ")
