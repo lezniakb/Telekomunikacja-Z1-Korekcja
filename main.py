@@ -160,8 +160,7 @@ def poprawWiadomosc(binarnyCiag, pozycjeBledowGlobal):
 
 def odbierzIWeryfikujWiadomosc():
     if sprawdzCzyIstnieje(zakodowanaPlik) == False:
-        print("Plik z zakodowaną wiadomością nie istnieje!")
-        return
+        return ""
 
     zakod = wczytajWiadomosc(zakodowanaPlik)
     pozycjeBledow = zweryfikujWiadomosc(zakod)
@@ -181,6 +180,8 @@ def odbierzIWeryfikujWiadomosc():
 
 
 def probujOdczytacZakodowana():
+    if sprawdzCzyIstnieje(zakodowanaPlik) == False:
+        return ""
     zakodowanaWiadomosc = wczytajWiadomosc(zakodowanaPlik)
     odczytanyTekst = ""
     # bierzemy bloki co 8 bitow, bez wzgledu na bity parzystosci
@@ -248,7 +249,9 @@ while True:
             print("Zakodowana wiadomość: ", probujOdczytacZakodowana())
 
     elif wybor == "4":
-        print("Zakodowana wiadomość: ", probujOdczytacZakodowana())
+        zakod = probujOdczytacZakodowana()
+        if zakod != "":
+            print("Zakodowana wiadomość: " + zakod)
 
     elif wybor == "5":
         odbierzIWeryfikujWiadomosc()
