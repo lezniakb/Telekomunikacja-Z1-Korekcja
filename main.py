@@ -12,6 +12,7 @@ def wczytajWiadomosc(nazwaPliku):
 def napiszWiadomosc(nazwaPliku, wiadomosc):
     with open(nazwaPliku, "w", encoding="utf-8") as plik:
         plik.write(wiadomosc)
+    return True
 
 
 def sprawdzCzyIstnieje(nazwaPliku):
@@ -41,9 +42,11 @@ def pobierzBityParzystosci(blok):
         suma = 0
         # dla kazdej kolumny w macierzy H
         for j in range(8):
-            # dodaj do sumy wartosc z macierzy pomnozonej razy wartosc calkowita z bitowBloku dla danej kolumny
+            # dla kazdego bitu wez odpowiedni bit z kolejnego wektora macierzy i pomnoz
             suma += H[i][j] * int(bityBloku[j])
+        # po obliczeniu sumy dla kolejnego wektora macierzy H, oblicz modulo
         parzystosc = suma % 2
+        # wynik zapisz jako string do ciagu bitow parzystosci (ciag wynikowy)
         bityParzystosci += str(parzystosc)
     return bityParzystosci
 
@@ -251,9 +254,11 @@ while True:
         odbierzIWeryfikujWiadomosc()
 
     elif wybor == "6":
-        exit(0)
+        break
 
     else:
         print("Wybrano niepoprawną opcję!")
 
     input("Wybierz enter aby kontynuować ")
+
+print("Pomyślnie zakończono program.")
