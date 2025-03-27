@@ -24,10 +24,11 @@ def sprawdzCzyIstnieje(nazwaPliku):
             # zwroc true
             return True
         else:
-            print("Wiadomość jest pusta! Wybierz opcję 1 w menu głównym aby ją napisać.")
+            print("Wiadomość jest pusta!")
     else:
-        print("Plik nie istnieje! Wybierz opcję 1 w menu głównym aby go utworzyć.")
+        print("Plik nie istnieje!")
     # plik nie istnieje lub jest pusty
+    print("Wybierz opcję 1 aby utworzyć plik, lub opcję 3, aby go zakodować.")
     return False
 
 
