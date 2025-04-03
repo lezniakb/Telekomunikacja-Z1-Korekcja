@@ -1,4 +1,5 @@
-# Telekomunikacja Zadanie 1 - Korekcja błędów transmisji
+# Telekomunikacja Zadanie 1 
+### Korekcja błędów transmisji
 ### Opis
 [PL]
 Repozytorium zawiera algorytm kodujący, nadający, weryfikujący, oraz odbierający komunikat. Celem tego zadania jest zapoznanie się z algorytmami sprawdzania błędów i retransmisji. Zadanie realizowane jest w ramach przedmiotu "*Telekomunikacja i przetwarzanie sygnałów*" na Politechnice Łódzkiej - 4 semestr na kierunku Informatyka Stosowana.
